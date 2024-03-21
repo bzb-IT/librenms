@@ -3048,3 +3048,18 @@ function server_info()
         $versions,
     ], 'system');
 }
+
+function get_device_sshport(Illuminate\Http\Request $request)
+{
+    $hostname = $request->route('hostname');
+    // use hostname as device_id if it's all digits
+    $device_id = ctype_digit($hostname) ? $hostname : getidbyname($hostname);
+
+    $device = device_by_id_cache($device_id);
+    $custom_ssh_port = get_dev_attrib($device, 'override_device_ssh_port');
+
+    return check_device_permission($device_id, function () use ($custom_ssh_port) {
+        return api_success([$custom_ssh_port], 'sshport');
+    });
+
+}

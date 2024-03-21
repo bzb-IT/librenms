@@ -122,6 +122,10 @@ Route::prefix('v0')->namespace('\App\Api\Controllers')->group(function () {
         Route::get('{hostname}/ports/{ifname}/{type}', 'LegacyApiController@get_graph_by_port_hostname')->name('get_graph_by_port_hostname');
         Route::get('{hostname}/services/{id}/graphs/{datasource}', 'LegacyApiController@get_graph_by_service')->name('get_graph_by_service');
 
+        #Route added by Sam
+        Route::get('{hostname}/sshport', 'LegacyApiController@get_device_sshport');
+        #end of added by Sam
+
         Route::get('{hostname}/{type}', 'LegacyApiController@get_graph_generic_by_hostname')->name('get_graph_generic_by_hostname');
         Route::get('', 'LegacyApiController@list_devices')->name('list_devices');
     });
