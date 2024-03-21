@@ -160,13 +160,18 @@ class SocialiteController extends Controller
             ! empty($claims)
         ) {
             $roles = [];
-            $attributes = $this->socialite_user->getRaw();
+            $attributes = collect($this->socialite_user->getRaw());
 
             foreach ($scopes as $scope) {
-                foreach (Arr::wrap($attributes[$scope] ?? []) as $scope_data) {
+                $matchedAttributes = $attributes->first(function ($attribute) use ($scope) {
+                    return $attribute->getName() === $scope;
+                });
+
+                foreach (Arr::wrap((!is_null($matchedAttributes) ? $matchedAttributes->getAllAttributeValues() : '') ?? []) as $scope_data) {
                     $roles = array_merge($roles, $claims[$scope_data]['roles'] ?? []);
                 }
             }
+
             if (count($roles) > 0) {
                 $user->setRoles(array_unique($roles), true);
 
