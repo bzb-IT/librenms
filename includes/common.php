@@ -511,7 +511,7 @@ function get_ports_mapped($device_id, $with_statistics = false)
     $ports = [];
     $maps = [
         'ifIndex' => [],
-        'ifName'  => [],
+        'ifName' => [],
         'ifDescr' => [],
     ];
 
@@ -537,7 +537,7 @@ function get_ports_mapped($device_id, $with_statistics = false)
 
     return [
         'ports' => $ports,
-        'maps'  => $maps,
+        'maps' => $maps,
     ];
 }
 
@@ -648,6 +648,7 @@ function ResolveGlues($tables, $target, $x = 0, $hist = [], $last = [])
             }
         }
     }
+
     //You should never get here.
     return false;
 }
@@ -729,6 +730,23 @@ function celsius_to_fahrenheit($value, $scale = 'celsius')
 {
     if ($scale === 'celsius') {
         $value = ($value * 1.8) + 32;
+    }
+
+    return sprintf('%.02f', $value);
+}
+
+/**
+ * Converts kelvin to fahrenheit (with 2 decimal places)
+ * if $scale is not celsius, it assumes celsius and  returns the value
+ *
+ * @param  float  $value
+ * @param  string  $scale  fahrenheit or celsius
+ * @return string (containing a float)
+ */
+function kelvin_to_celsius($value, $scale = 'celsius')
+{
+    if ($scale === 'celsius') {
+        $value = $value - 273.15;
     }
 
     return sprintf('%.02f', $value);

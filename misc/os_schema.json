@@ -99,10 +99,10 @@
                 "entity-state": {
                     "type": "boolean"
                 },
-                "wifi": {
+                "ipmi": {
                     "type": "boolean"
                 },
-                "ipmi": {
+                "isis": {
                     "type": "boolean"
                 },
                 "entity-physical": {
@@ -265,6 +265,9 @@
                     "type": "boolean"
                 },
                 "hr-device": {
+                    "type": "boolean"
+                },
+                "isis": {
                     "type": "boolean"
                 },
                 "discovery-protocols": {

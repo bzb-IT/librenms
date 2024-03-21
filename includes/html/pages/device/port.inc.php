@@ -2,6 +2,7 @@
 
 use App\Models\Port;
 use App\Models\PortAdsl;
+use App\Models\PortsNac;
 use App\Models\PortVdsl;
 use App\Plugins\Hooks\PortTabHook;
 use LibreNMS\Util\Rewrite;
@@ -66,17 +67,22 @@ echo "<div style='clear: both;'>";
 print_optionbar_start();
 
 $link_array = [
-    'page'   => 'device',
+    'page' => 'device',
     'device' => $device['device_id'],
-    'tab'    => 'port',
-    'port'   => $port->port_id,
+    'tab' => 'port',
+    'port' => $port->port_id,
 ];
 
 $menu_options['graphs'] = 'Graphs';
 $menu_options['realtime'] = 'Real time';
-// FIXME CONDITIONAL
-$menu_options['arp'] = 'ARP Table';
-$menu_options['fdb'] = 'FDB Table';
+
+if ($port->macs()->exists()) {
+    $menu_options['arp'] = 'ARP Table';
+}
+
+if ($port->fdbEntries()->exists()) {
+    $menu_options['fdb'] = 'FDB Table';
+}
 $menu_options['events'] = 'Eventlog';
 $menu_options['notes'] = (get_dev_attrib($device, 'port_id_notes:' . $port->port_id) ?? '') == '' ? 'Notes' : 'Notes*';
 
@@ -88,6 +94,10 @@ if (PortAdsl::where('port_id', $port->port_id)->exists()) {
     $menu_options['xdsl'] = 'xDSL';
 } elseif (PortVdsl::where('port_id', $port->port_id)->exists()) {
     $menu_options['xdsl'] = 'xDSL';
+}
+
+if (PortsNac::where('port_id', $port->port_id)->exists()) {
+    $menu_options['nac'] = 'NAC';
 }
 
 if (DeviceCache::getPrimary()->ports()->where('pagpGroupIfIndex', $port->ifIndex)->exists()) {

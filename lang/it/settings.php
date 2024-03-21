@@ -65,7 +65,6 @@ return [
             'rrdtool' => ['name' => 'Datastore: RRDTool'],
             'snmp' => ['name' => 'SNMP'],
             'poller_modules' => ['name' => 'Poller Modules'],
-            'interface_types' => ['name' => 'Interface Type by RFC 7224'],
         ],
         'system' => [
             'cleanup' => ['name' => 'Cleanup'],
@@ -236,9 +235,6 @@ return [
                     'help' => 'Matches the request origin. Wildcards can be used, eg. *.mydomain.com',
                 ],
             ],
-        ],
-        'api_demo' => [
-            'description' => 'This is the demo',
         ],
         'apps' => [
             'powerdns-recursor' => [
@@ -1086,9 +1082,6 @@ return [
             'ucd-diskio' => [
                 'description' => 'UCD DiskIO',
             ],
-            'wifi' => [
-                'description' => 'Wifi',
-            ],
             'wireless' => [
                 'description' => 'Wireless',
             ],
@@ -1182,6 +1175,10 @@ return [
         ],
         'ports_fdb_purge' => [
             'description' => 'Port FDB entries older than',
+            'help' => 'Cleanup done by daily.sh',
+        ],
+        'ports_nac_purge' => [
+            'description' => 'Port NAC entries older than',
             'help' => 'Cleanup done by daily.sh',
         ],
         'ports_purge' => [

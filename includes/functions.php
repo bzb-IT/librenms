@@ -108,8 +108,15 @@ function getImageName($device, $use_database = true, $dir = 'images/os/')
 function renamehost($id, $new, $source = 'console')
 {
     $host = gethostbyid($id);
+    $new_rrd_dir = Rrd::dirFromHost($new);
 
-    if (! is_dir(Rrd::dirFromHost($new)) && rename(Rrd::dirFromHost($host), Rrd::dirFromHost($new)) === true) {
+    if (is_dir($new_rrd_dir)) {
+        log_event("Renaming of $host failed due to existing RRD folder for $new", $id, 'system', 5);
+
+        return "Renaming of $host failed due to existing RRD folder for $new\n";
+    }
+
+    if (! is_dir($new_rrd_dir) && rename(Rrd::dirFromHost($host), $new_rrd_dir) === true) {
         dbUpdate(['hostname' => $new, 'ip' => null], 'devices', 'device_id=?', [$id]);
         log_event("Hostname changed -> $new ($source)", $id, 'system', 3);
 
@@ -135,7 +142,7 @@ function device_discovery_trigger($id)
         $message = 'Error rediscovering device';
     }
 
-    return ['status'=> $update, 'message' => $message];
+    return ['status' => $update, 'message' => $message];
 }
 
 function delete_device($id)
@@ -733,13 +740,13 @@ function getCIMCentPhysical($location, &$entphysical, &$index)
         // Now we have an ID, create the entry.
         $index++;
         $insert = [
-            'device_id'                 => $device['device_id'],
-            'entPhysicalIndex'          => $index,
-            'entPhysicalClass'          => 'container',
-            'entPhysicalVendorType'     => $location,
-            'entPhysicalName'           => $shortlocation,
-            'entPhysicalContainedIn'    => $parent,
-            'entPhysicalParentRelPos'   => '-1',
+            'device_id' => $device['device_id'],
+            'entPhysicalIndex' => $index,
+            'entPhysicalClass' => 'container',
+            'entPhysicalVendorType' => $location,
+            'entPhysicalName' => $shortlocation,
+            'entPhysicalContainedIn' => $parent,
+            'entPhysicalParentRelPos' => '-1',
         ];
 
         // Add to the DB and Array.
@@ -830,21 +837,21 @@ function cache_peeringdb()
                         if ($tmp_peer) {
                             $peer_keep[] = $tmp_peer['pdb_ix_peers_id'];
                             $update = [
-                                'remote_asn'     => $peer->{'asn'},
-                                'remote_ipaddr4'  => $peer->{'ipaddr4'},
+                                'remote_asn' => $peer->{'asn'},
+                                'remote_ipaddr4' => $peer->{'ipaddr4'},
                                 'remote_ipaddr6' => $peer->{'ipaddr6'},
-                                'name'           => $peer_name,
+                                'name' => $peer_name,
                             ];
                             dbUpdate($update, 'pdb_ix_peers', '`pdb_ix_peers_id` = ?', [$tmp_peer['pdb_ix_peers_id']]);
                         } else {
                             $peer_insert = [
-                                'ix_id'          => $ixid,
-                                'peer_id'        => $peer->{'id'},
-                                'remote_asn'     => $peer->{'asn'},
+                                'ix_id' => $ixid,
+                                'peer_id' => $peer->{'id'},
+                                'remote_asn' => $peer->{'asn'},
                                 'remote_ipaddr4' => $peer->{'ipaddr4'},
                                 'remote_ipaddr6' => $peer->{'ipaddr6'},
-                                'name'           => $peer_name,
-                                'timestamp'      => time(),
+                                'name' => $peer_name,
+                                'timestamp' => time(),
                             ];
                             $peer_keep[] = dbInsert($peer_insert, 'pdb_ix_peers');
                         }

@@ -238,8 +238,8 @@ if (! empty($peers)) {
                     } else {
                         $peer_data['bgpPeerAdminStatus'] = $bgpPeers[$vrfOid][$address]['tBgpPeerNgOperLastEvent'];
                     }
-                    $peer_data['bgpPeerInTotalMessages'] = $bgpPeers[$vrfOid][$address]['tBgpPeerNgOperMsgOctetsRcvd'];  // That are actually only octets available,
-                    $peer_data['bgpPeerOutTotalMessages'] = $bgpPeers[$vrfOid][$address]['tBgpPeerNgOperMsgOctetsSent']; // not messages
+                    $peer_data['bgpPeerInTotalMessages'] = $bgpPeers[$vrfOid][$address]['tBgpPeerNgOperMsgOctetsRcvd'] % (2 ** 32);  // That are actually only octets available,
+                    $peer_data['bgpPeerOutTotalMessages'] = $bgpPeers[$vrfOid][$address]['tBgpPeerNgOperMsgOctetsSent'] % (2 ** 32); // not messages
                     $peer_data['bgpPeerFsmEstablishedTime'] = $establishedTime;
                 } elseif ($device['os'] == 'firebrick') {
                     // ToDo, It seems that bgpPeer(In|Out)Updates and bgpPeerInUpdateElapsedTime are actually not available over SNMP
@@ -458,10 +458,16 @@ if (! empty($peers)) {
                     $peer_data['bgpPeerIface'] = null;
                 }
             }
-            d_echo($peer_data);
         } catch (InvalidIpException $e) {
             // ignore
         }
+
+        if (empty($peer_data)) {
+            continue; // no data, try next peer
+        }
+
+        d_echo($peer_data);
+
         // --- Send event log notices ---
         if ($peer_data['bgpPeerFsmEstablishedTime']) {
             if (! (is_array(\LibreNMS\Config::get('alerts.bgp.whitelist'))
@@ -723,14 +729,14 @@ if (! empty($peers)) {
                 $cbgpPeerWithdrawnPrefixes = set_numeric($cbgpPeerWithdrawnPrefixes);
 
                 $cbgpPeers_cbgp_fields = [
-                    'AcceptedPrefixes'     => $cbgpPeerAcceptedPrefixes,
-                    'DeniedPrefixes'       => $cbgpPeerDeniedPrefixes,
-                    'PrefixAdminLimit'     => $cbgpPeerPrefixAdminLimit,
-                    'PrefixThreshold'      => $cbgpPeerPrefixThreshold,
+                    'AcceptedPrefixes' => $cbgpPeerAcceptedPrefixes,
+                    'DeniedPrefixes' => $cbgpPeerDeniedPrefixes,
+                    'PrefixAdminLimit' => $cbgpPeerPrefixAdminLimit,
+                    'PrefixThreshold' => $cbgpPeerPrefixThreshold,
                     'PrefixClearThreshold' => $cbgpPeerPrefixClearThreshold,
-                    'AdvertisedPrefixes'   => $cbgpPeerAdvertisedPrefixes,
-                    'SuppressedPrefixes'   => $cbgpPeerSuppressedPrefixes,
-                    'WithdrawnPrefixes'    => $cbgpPeerWithdrawnPrefixes,
+                    'AdvertisedPrefixes' => $cbgpPeerAdvertisedPrefixes,
+                    'SuppressedPrefixes' => $cbgpPeerSuppressedPrefixes,
+                    'WithdrawnPrefixes' => $cbgpPeerWithdrawnPrefixes,
                 ];
 
                 foreach ($cbgpPeers_cbgp_fields as $field => $value) {
@@ -775,11 +781,11 @@ if (! empty($peers)) {
                     ->addDataset('SuppressedPrefixes', 'GAUGE', null, 100000000000)
                     ->addDataset('WithdrawnPrefixes', 'GAUGE', null, 100000000000);
                 $fields = [
-                    'AcceptedPrefixes'    => $cbgpPeerAcceptedPrefixes,
-                    'DeniedPrefixes'      => $cbgpPeerDeniedPrefixes,
-                    'AdvertisedPrefixes'  => $cbgpPeerAdvertisedPrefixes,
-                    'SuppressedPrefixes'  => $cbgpPeerSuppressedPrefixes,
-                    'WithdrawnPrefixes'   => $cbgpPeerWithdrawnPrefixes,
+                    'AcceptedPrefixes' => $cbgpPeerAcceptedPrefixes,
+                    'DeniedPrefixes' => $cbgpPeerDeniedPrefixes,
+                    'AdvertisedPrefixes' => $cbgpPeerAdvertisedPrefixes,
+                    'SuppressedPrefixes' => $cbgpPeerSuppressedPrefixes,
+                    'WithdrawnPrefixes' => $cbgpPeerWithdrawnPrefixes,
                 ];
 
                 $tags = [

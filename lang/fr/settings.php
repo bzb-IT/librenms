@@ -184,10 +184,6 @@ return [
             'description' => 'Autoriser l\'accès aux graphes pour les réseaux suivants sans login',
             'help' => '(ne s\'applique pas si l\'accès sans login est déjà permis)',
         ],
-        'api_demo' => [
-            'description' => 'Ceci est la démo',
-            'help' => 'Démo',
-        ],
         'apps' => [
             'powerdns-recursor' => [
                 'api-key' => [
@@ -823,9 +819,6 @@ return [
             'ucd-diskio' => [
                 'description' => 'UCD DiskIO',
             ],
-            'wifi' => [
-                'description' => 'Wifi',
-            ],
             'wireless' => [
                 'description' => 'Wireless',
             ],
@@ -922,6 +915,10 @@ return [
         ],
         'ports_fdb_purge' => [
             'description' => 'Table port FDB, entrées plus anciennes que',
+            'help' => 'Nettoyage effectué par daily.sh',
+        ],
+        'ports_nac_purge' => [
+            'description' => 'Table port NAC, entrées plus anciennes que',
             'help' => 'Nettoyage effectué par daily.sh',
         ],
         'ports_purge' => [
